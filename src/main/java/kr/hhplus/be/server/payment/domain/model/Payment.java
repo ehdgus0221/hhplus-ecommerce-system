@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.payment.domain.model;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.common.exception.InvalidAmountException;
+import kr.hhplus.be.server.common.InvalidAmountException;
 import lombok.*;
 
 import java.time.LocalDateTime;
