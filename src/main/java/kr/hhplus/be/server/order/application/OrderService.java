@@ -14,14 +14,16 @@ public class OrderService {
 
     private final OrderDomainService orderDomainService;
 
-    @Transactional
     public Order createOrder(Long userId, Long productId, Long optionId, Integer stock, String couponId) {
         return orderDomainService.createOrder(userId, productId, optionId, stock, couponId);
     }
 
-    @Transactional
     public void linkPaymentWithOrder(Payment payment, Order order) {
         orderDomainService.linkPaymentWithOrder(payment, order);
+    }
+
+    public void restoreStock(Order order) {
+        orderDomainService.restoreStock(order);
     }
 
 }

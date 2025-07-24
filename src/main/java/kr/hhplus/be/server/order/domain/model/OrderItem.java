@@ -23,14 +23,14 @@ public class OrderItem {
     // 상품 옵션 아이디 (외래키)
     private Long productOptionId;
 
-    private Integer quantity;
+    private Integer stock;
 
     private Integer unitPrice;
 
-    public static OrderItem create(Long productOptionId, Integer quantity, Integer unitPrice) {
+    public static OrderItem create(Long productOptionId, Integer stock, Integer unitPrice) {
         OrderItem orderItem = new OrderItem();
         orderItem.productOptionId = productOptionId;
-        orderItem.quantity = quantity;
+        orderItem.stock = stock;
         orderItem.unitPrice = unitPrice;
         return orderItem;
     }

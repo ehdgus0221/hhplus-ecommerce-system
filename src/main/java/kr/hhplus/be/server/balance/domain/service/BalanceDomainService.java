@@ -15,7 +15,6 @@ public class BalanceDomainService {
     private final BalanceRepository balanceRepository;
     private final BalanceHistoryRepository balanceHistoryRepository;
 
-    @Transactional
     public Balance charge(Long userId, int amount) {
         Balance balance = balanceRepository.findByUserId(userId)
                 .orElse(Balance.createInitial(userId));
@@ -27,7 +26,6 @@ public class BalanceDomainService {
         return balance;
     }
 
-    @Transactional
     public Balance use(Long userId, int amount) {
         Balance balance = balanceRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("잔액 정보가 존재하지 않습니다."));

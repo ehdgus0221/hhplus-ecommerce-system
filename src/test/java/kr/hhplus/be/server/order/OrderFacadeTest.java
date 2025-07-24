@@ -6,6 +6,7 @@ import kr.hhplus.be.server.order.api.dto.request.OrderRequestDto;
 import kr.hhplus.be.server.order.api.dto.response.OrderResponseDto;
 import kr.hhplus.be.server.order.application.OrderFacade;
 import kr.hhplus.be.server.order.application.OrderService;
+import kr.hhplus.be.server.order.domain.model.Order;
 import kr.hhplus.be.server.order.domain.model.OrderStatus;
 import kr.hhplus.be.server.payment.application.PaymentService;
 import kr.hhplus.be.server.payment.domain.model.Payment;
@@ -107,5 +108,36 @@ class OrderFacadeTest {
         verify(balanceService).use(1L, 3000);
         verify(paymentService).processPayment(1L, 3000);
         verify(orderService).linkPaymentWithOrder(payment, order);
+    }
+
+    @Test
+    @DisplayName("결제 실패 시 재고 복구 호출 및 예외 전파")
+    void placeOrder_paymentFail_shouldRestoreStock() {
+        // given
+        OrderRequestDto.Create request = new OrderRequestDto.Create("2", "3", 2, "1", null);
+
+        Order order = mock(Order.class);
+        when(order.getTotalPrice()).thenReturn(3000);
+
+        when(orderService.createOrder(anyLong(), anyLong(), anyLong(), anyInt(), any()))
+                .thenReturn(order);
+
+        when(balanceService.use(anyLong(), anyInt())).thenReturn(null);
+
+        when(paymentService.processPayment(anyLong(), anyInt()))
+                .thenThrow(new RuntimeException("결제 실패"));
+
+        doNothing().when(orderService).restoreStock(order);
+
+        // when & then
+        assertThatThrownBy(() -> orderFacade.placeOrder(request))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("결제 실패");
+
+        verify(orderService).createOrder(1L, 2L, 3L, 2, null);
+        verify(balanceService).use(1L, 3000);
+        verify(paymentService).processPayment(1L, 3000);
+        verify(orderService).restoreStock(order); // 복구 호출 확인
+        verify(orderService, never()).linkPaymentWithOrder(any(), any());
     }
 }
