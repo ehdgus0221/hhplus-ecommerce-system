@@ -1,9 +1,9 @@
-package kr.hhplus.be.server.payment.api;
+package kr.hhplus.be.server.payment.api.spec;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.payment.dto.request.PaymentRequest;
-import kr.hhplus.be.server.payment.dto.response.PaymentResponse;
+import kr.hhplus.be.server.payment.api.dto.request.PaymentRequest;
+import kr.hhplus.be.server.payment.api.dto.response.PaymentResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
