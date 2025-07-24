@@ -40,16 +40,24 @@ dependencies {
 	testImplementation("io.rest-assured:spring-mock-mvc")
 	testImplementation("com.epages:restdocs-api-spec-mockmvc:0.19.2")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
+	compileOnly("org.projectlombok:lombok:1.18.28")
+	annotationProcessor("org.projectlombok:lombok:1.18.28")
 
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
+	implementation("com.h2database:h2")
 
     // Test
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testCompileOnly("org.projectlombok:lombok:1.18.28")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+	implementation("org.springframework.boot:spring-boot-starter")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	runtimeOnly("com.h2database:h2") // 테스트용 임베디드 DB
 }
 
 tasks.withType<Test> {

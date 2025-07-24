@@ -1,11 +1,15 @@
-package kr.hhplus.be.server.product.dto.request;
+package kr.hhplus.be.server.product.api.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-public class ProductRequest{
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Builder
+public class ProductRequestDto {
     public record Create(
 
             @Schema(description = "상품 이름", requiredMode = RequiredMode.REQUIRED)
