@@ -1,4 +1,86 @@
-# 클린 아키텍처를 적용하며 느낀 점
+# 1. 레이어드 + 인터페이스 아키텍처 -> 클린 아키텍처 부분 도입
+## 1. 초기 구조 (레이어드 + 인터페이스 아키텍처)
+
+초기에는 전형적인 레이어드 아키텍처를 사용하여 기능 중심으로 구조화되어 있었습니다.
+
+com.example.ecommerce.balance
+├── api
+├── controller
+├── service
+├── service.impl
+├── repository
+├── domain
+├── dto
+
+
+### 주요 특징
+- 컨트롤러 → 서비스 → 레포지토리의 흐름
+- 인터페이스와 구현체를 `service` / `service.impl` 및 `repository` / `repository.impl`로 분리
+- `dto`, `domain` 폴더는 단일 계층에서 사용
+
+---
+
+## 2. 구조 리팩토링 (클린 아키텍처 원칙 일부 도입)
+
+다음과 같은 기준으로 패키지 구조를 재편성 하였습니다.
+
+com.example.ecommerce.balance
+├── api
+│ ├── controller
+│ ├── dto
+│ │ ├── request
+│ │ ├── response
+│ └── spec
+├── application
+├── domain
+│ ├── model
+│ ├── repository
+│ └── service
+├── infrastructure
+│ └── persistence
+│ ├── impl
+│ └── jpa
+
+### 변화 요약
+
+| 항목 | Before | After | 변경 이유 |
+|------|--------|-------|------------|
+| **controller** | balance.controller | balance.api.controller | 외부 진입점을 api로 명확히 분리 |
+| **dto** | balance.dto | balance.api.dto.request / response | 입력과 출력 DTO를 명확하게 분리 |
+| **spec** | 없음 | balance.api.spec | Swagger용 API 명세 클래스 관리 |
+| **서비스 인터페이스** | balance.service | balance.application | 유즈케이스로 명확히 정의 |
+| **도메인 모델** | balance.domain | balance.domain.model | 핵심 비즈니스 객체만 위치 |
+| **도메인 서비스** | balance.service | balance.domain.service | 도메인 정책 로직의 독립화 |
+| **레포지토리 인터페이스** | balance.repository | balance.domain.repository | 인프라에 종속되지 않도록 분리 |
+| **레포지토리 구현체** | balance.repository.impl | balance.infrastructure.persistence.impl | 구현은 외부 계층에 둠 |
+| **JPA 인터페이스** | 없음 | balance.infrastructure.persistence.jpa | Spring Data JPA 전용 인터페이스 별도 관리 |
+
+---
+
+## 3. 설계 원칙 적용
+
+- **의존성 역전 원칙 (DIP)**  
+  - `domain.repository`는 `infrastructure`에 의존하지 않음
+  - `BalanceJpaRepository`는 구현체에서만 참조됨
+
+- **관심사 분리 (Separation of Concerns)**  
+  - 요청/응답 DTO, 유즈케이스, 도메인, 영속성 구현이 명확히 분리됨
+
+- **SOLID** 중 일부 원칙 적용  
+  - SRP: 각각의 클래스와 패키지는 하나의 책임만 가지도록 분리
+  - DIP: 인터페이스 의존 및 외부 구현체 분리
+
+---
+
+## 4. 장점
+
+- 유지보수 및 테스트 용이
+- 명확한 책임 분리
+- 도메인 모델이 인프라 구현과 분리되어 재사용성과 확장성 증가
+
+
+
+# 2. 클린 아키텍처를 적용하며 느낀 점
 
 ## 개요
 
@@ -71,3 +153,4 @@
 
 이번 경험을 통해 단순한 기술 도입이 아니라, 코드의 역할과 책임을 구분하는 관점에서 설계를 고민하게 되었고,  
 앞으로 더욱 좋은 품질의 코드를 작성할 것 입니다!
+
