@@ -3,6 +3,7 @@
 
 초기에는 전형적인 레이어드 아키텍처를 사용하여 기능 중심으로 구조화되어 있었습니다.
 
+```
 com.example.ecommerce.balance
 ├── api
 ├── controller
@@ -11,6 +12,7 @@ com.example.ecommerce.balance
 ├── repository
 ├── domain
 ├── dto
+```
 
 
 ### 주요 특징
@@ -24,6 +26,7 @@ com.example.ecommerce.balance
 
 다음과 같은 기준으로 패키지 구조를 재편성 하였습니다.
 
+```
 com.example.ecommerce.balance
 ├── api
 │ ├── controller
@@ -40,9 +43,11 @@ com.example.ecommerce.balance
 │ └── persistence
 │ ├── impl
 │ └── jpa
+```
 
 ### 변화 요약
 
+```
 | 항목 | Before | After | 변경 이유 |
 |------|--------|-------|------------|
 | **controller** | balance.controller | balance.api.controller | 외부 진입점을 api로 명확히 분리 |
@@ -54,7 +59,7 @@ com.example.ecommerce.balance
 | **레포지토리 인터페이스** | balance.repository | balance.domain.repository | 인프라에 종속되지 않도록 분리 |
 | **레포지토리 구현체** | balance.repository.impl | balance.infrastructure.persistence.impl | 구현은 외부 계층에 둠 |
 | **JPA 인터페이스** | 없음 | balance.infrastructure.persistence.jpa | Spring Data JPA 전용 인터페이스 별도 관리 |
-
+```
 ---
 
 ## 3. 설계 원칙 적용
@@ -97,20 +102,13 @@ com.example.ecommerce.balance
 도메인 로직을 보다 명확하게 표현할 수 있는 구조가 필요했습니다.
 그 과정에서 클린 아키텍처를 적용하게 됐고, 다음과 같은 기준과 목적을 가지고 패키지를 나누었습니다.
 
-## 패키지 구성
-
-- `api`: 외부 요청을 받는 controller와 dto
-- `application`: 유즈케이스 중심으로 흐름을 조율하는 서비스
-- `domain`: 핵심 모델과 도메인 로직, 비즈니스 규칙
-- `infrastructure`: 실제 JPA 구현체와 DB 접근 기술
-
 ---
 
 ## 구현하면서 느낀 점
 
 ### 1. 도메인 중심 설계의 장점
 
-`Balance`, `BalanceHistory`와 같은 도메인 모델이 핵심 로직을 책임지도록 구성하면서 코드의 응집도가 훨씬 높아졌습니다.
+도메인 모델이 핵심 로직을 책임지도록 구성하면서 코드의 응집도가 훨씬 높아졌습니다.
 이전에는 모든 처리를 서비스 레이어에서 하다 보니 로직이 흩어지고 테스트도 어려웠는데,  
 이제는 도메인 단위로 책임이 분리되고 테스트도 용이해졌습니다.
 
