@@ -33,12 +33,17 @@ public class OrderFacade {
         balanceService.use(userId, order.getTotalPrice());
 
         // 3. 결제 처리
-        Payment payment = paymentService.processPayment(userId, order.getTotalPrice());
+        try {
+            Payment payment = paymentService.processPayment(userId, order.getTotalPrice());
 
-        // 4. 결제와 주문 연결
-        orderService.linkPaymentWithOrder(payment, order);
+            // 4. 결제와 주문 연결
+            orderService.linkPaymentWithOrder(payment, order);
 
-        // 5. 응답 반환
-        return OrderResponseDto.fromOrder(order, productId, optionId, stock);
+            // 5. 응답 반환
+            return OrderResponseDto.fromOrder(order, productId, optionId, stock);
+        } catch (Exception e) {
+            orderService.restoreStock(order);
+            throw e;
+        }
     }
 }

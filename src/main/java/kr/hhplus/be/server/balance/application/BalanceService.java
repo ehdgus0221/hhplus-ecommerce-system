@@ -6,6 +6,7 @@ import kr.hhplus.be.server.balance.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.balance.domain.service.BalanceDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -17,6 +18,7 @@ public class BalanceService {
         return BalanceResponseDto.from(balanceDomainService.charge(userId, amount));
     }
 
+    @Transactional
     public BalanceResponseDto use(Long userId, int amount) {
         return BalanceResponseDto.from(balanceDomainService.use(userId, amount));
     }
