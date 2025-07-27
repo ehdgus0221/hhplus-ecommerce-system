@@ -1,0 +1,12 @@
+package kr.hhplus.be.server.common;
+
+public class InvalidAmountException extends RuntimeException {
+
+    public InvalidAmountException() {
+        super("유효하지 않은 금액입니다.");
+    }
+
+    public InvalidAmountException(String message) {
+        super(message);
+    }
+}
