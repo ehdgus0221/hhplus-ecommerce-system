@@ -33,7 +33,6 @@ public class CouponIssueResponseDto {
                 .couponId(coupon.getId())
                 .couponName(coupon.getName())
                 .discountRate(coupon.getDiscountRate())
-                .used(userCoupon.isUsed())
                 .issuedAt(userCoupon.getIssuedAt())
                 .build();
     }

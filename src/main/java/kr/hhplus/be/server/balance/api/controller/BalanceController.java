@@ -16,21 +16,21 @@ public class BalanceController{
 
     private final BalanceService balanceService;
 
-    @PostMapping("/charge")
-    public ResponseEntity<BalanceResponseDto> chargeBalance(@RequestParam Long userId,
+    @PostMapping("/charge/user/{userId}")
+    public ResponseEntity<BalanceResponseDto> chargeBalance(@PathVariable("userId") Long userId,
                                                             @Valid @RequestBody BalanceChargeRequestDto request) {
         BalanceResponseDto response = balanceService.charge(userId, request.getAmount());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<BalanceResponseDto> getBalance(@PathVariable Long userId) {
+    public ResponseEntity<BalanceResponseDto> getBalance(@PathVariable("userId") Long userId) {
         BalanceResponseDto response = balanceService.get(userId);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/use")
-    public ResponseEntity<BalanceResponseDto> useBalance(@RequestParam Long userId,
+    @PostMapping("/use/user/{userId}")
+    public ResponseEntity<BalanceResponseDto> useBalance(@PathVariable("userId") Long userId,
                                                          @Valid @RequestBody BalanceUseRequestDto request) {
         BalanceResponseDto response = balanceService.use(userId, request.getAmount());
         return ResponseEntity.ok(response);

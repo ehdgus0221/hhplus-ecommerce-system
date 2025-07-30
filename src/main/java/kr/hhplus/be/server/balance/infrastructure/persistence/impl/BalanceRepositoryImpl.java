@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
-public class BalanceRepositoryImpl implements  BalanceRepository {
+public class BalanceRepositoryImpl implements BalanceRepository {
 
     private final BalanceJpaRepository balanceJpaRepository;
 

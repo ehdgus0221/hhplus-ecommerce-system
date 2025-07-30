@@ -10,35 +10,28 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")
     private Long id;
 
     private Long userId;
 
-    private Long productId;
-
-    private Long productOptionId;
-
-    private Integer stock;
-
     private Long userCouponId;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    private final List<OrderItem> orderItems = new ArrayList<>();
 
-    private int totalPrice;
+    private long totalPrice;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     private LocalDateTime orderDate;
 
-    public static Order create(Long userId, Long userCouponId, int totalPrice, OrderStatus status, LocalDateTime orderDate) {
+    public static Order create(Long userId, Long userCouponId, long totalPrice, OrderStatus status, LocalDateTime orderDate) {
         Order order = new Order();
         order.userId = userId;
         order.userCouponId = userCouponId;
@@ -53,11 +46,4 @@ public class Order {
         item.setOrder(this);
     }
 
-    public void completePayment() {
-        this.status = OrderStatus.PAID;
-    }
-
-    public void failPayment() {
-        this.status = OrderStatus.FAILED;
-    }
 }
