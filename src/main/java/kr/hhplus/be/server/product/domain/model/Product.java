@@ -25,13 +25,12 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ProductOption> options = new ArrayList<>();
     @Builder
-    private Product(long id, String name, int basePrice, String description, ProductStatus status) {
+    private Product(String name, int basePrice, String description, ProductStatus status) {
 
         if (basePrice <= 0) {
             throw new IllegalArgumentException(ErrorMessages.INVALID_PRODUCT_PRICE);
         }
 
-        this.id = id;
         this.name = name;
         this.basePrice = basePrice;
         this.description = description;

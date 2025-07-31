@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.product.infrastructure.persistence.impl;
 
 import kr.hhplus.be.server.product.domain.model.Product;
+import kr.hhplus.be.server.product.domain.model.ProductStatus;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.product.infrastructure.persistence.jpa.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final ProductJpaRepository productJpaRepository;
 
     @Override
-    public List<Product> findAllActiveProducts() {
-        return productJpaRepository.findAll();
+    public List<Product> findByStatus(ProductStatus status) {
+        return productJpaRepository.findByStatus(status);
     }
 
     @Override
