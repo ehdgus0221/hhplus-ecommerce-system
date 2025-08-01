@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "balance", indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id")
+})
 public class Balance {
 
     private static final long INITIAL_AMOUNT = 0L;
