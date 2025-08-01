@@ -5,12 +5,19 @@ import kr.hhplus.be.server.coupon.domain.repository.UserCouponRepository;
 import kr.hhplus.be.server.coupon.infrastructure.persistence.jpa.UserCouponJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.webjars.NotFoundException;
 
 @RequiredArgsConstructor
 @Repository
 public class UserCouponRepositoryImpl implements UserCouponRepository {
 
     private final UserCouponJpaRepository userCouponJpaRepository;
+
+    @Override
+    public UserCoupon findById(Long userCouponId) {
+        return userCouponJpaRepository.findById(userCouponId)
+                .orElseThrow(() -> new NotFoundException("사용자 정보를 찾을 수 없습니다."));
+    }
 
     @Override
     public boolean existsByUserIdAndCouponId(Long userId, Long couponId) {

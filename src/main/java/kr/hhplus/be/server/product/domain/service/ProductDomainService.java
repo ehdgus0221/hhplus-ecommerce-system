@@ -3,6 +3,7 @@ package kr.hhplus.be.server.product.domain.service;
 import jakarta.persistence.EntityNotFoundException;
 import kr.hhplus.be.server.product.domain.model.Product;
 import kr.hhplus.be.server.product.domain.model.ProductOption;
+import kr.hhplus.be.server.product.domain.model.ProductStatus;
 import kr.hhplus.be.server.product.domain.repository.ProductOptionRepository;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class ProductDomainService {
 
     @Transactional(readOnly = true)
     public List<Product> getAllActiveProducts() {
-        return productRepository.findAllActiveProducts();
+        return productRepository.findByStatus(ProductStatus.ON_SALE);
     }
 
     @Transactional(readOnly = true)

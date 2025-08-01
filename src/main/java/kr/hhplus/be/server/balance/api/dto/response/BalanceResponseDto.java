@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class BalanceResponseDto {
-    private int amount;
+    private long amount;
 
     public static BalanceResponseDto from(Balance balance) {
         return BalanceResponseDto.builder()
@@ -16,7 +16,7 @@ public class BalanceResponseDto {
                 .build();
     }
 
-    public static BalanceResponseDto of(int amount) {
+    public static BalanceResponseDto of(long amount) {
         return BalanceResponseDto.builder()
                 .amount(amount)
                 .build();

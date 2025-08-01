@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.product.api.dto.response;
 
 import kr.hhplus.be.server.product.domain.model.Product;
+import kr.hhplus.be.server.product.domain.model.ProductStatus;
 import lombok.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class ProductResponseDto {
         this.basePrice = product.getBasePrice();
         this.description = product.getDescription();
         this.options = product.getOptions().stream()
-                .filter(option -> option.getProduct().isActive() && option.getStock() > 0)
+                .filter(option -> option.getProduct().getStatus().equals(ProductStatus.ON_SALE) && option.getStock() > 0)
                 .map(ProductOptionResponseDto::new)
                 .collect(Collectors.toList());
     }

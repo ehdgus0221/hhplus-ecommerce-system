@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,33 +25,28 @@ public class OrderDomainService {
     private final PaymentRepository paymentRepository;
     private final ProductOptionRepository productOptionRepository;
 
-    public Order createOrder(Long userId, Long productId, Long optionId, Integer stock, String couponId) {
+    public Order createOrder(Long userId, Long productId, Long optionId, long quantity, String couponId) {
 
-        // 상품 조회
         Product product = productRepository.findByIdOrThrow(productId);
 
         // 옵션 조회 및 재고 확인
         // 비관적 락 적용
         ProductOption option = productOptionRepository.findWithPessimisticLock(optionId);
 
-        if (!option.isActive() || option.getStock() < stock) {
+        if (!option.isOutOfStock() || option.isStockInsufficient(quantity)) {
             throw new IllegalArgumentException("해당 옵션의 재고가 부족하거나 비활성 상태입니다.");
         }
-        option.decreaseStock(stock);
-
-        // 가격 계산
-        int unitPrice = product.getBasePrice() + option.getPrice();
-        int totalPrice = unitPrice * stock.intValue();
+        option.decreaseStock(quantity);
 
         Order order = Order.create(
                 userId,
                 couponId != null ? Long.valueOf(couponId) : null,
-                totalPrice,
+                product.getBasePrice(),
                 OrderStatus.ORDERED,
                 LocalDateTime.now()
         );
 
-        OrderItem orderItem = OrderItem.create(optionId, stock, unitPrice);
+        OrderItem orderItem = OrderItem.create(optionId, product.getName(), quantity, product.getBasePrice());
         order.addOrderItem(orderItem); // 책임은 Order가 진다
 
         orderRepository.save(order);
@@ -66,7 +62,7 @@ public class OrderDomainService {
     public void restoreStock(Order order) {
         order.getOrderItems().forEach(orderItem -> {
             Long optionId = orderItem.getProductOptionId();
-            Integer quantity = orderItem.getStock();
+            long quantity = orderItem.getStock();
 
             // 상품 옵션 조회 (상품 전체를 다시 조회해도 되고, 옵션만 조회해도 됨)
             // 아래는 옵션만 단독 조회할 수 있는 메서드가 있다고 가정

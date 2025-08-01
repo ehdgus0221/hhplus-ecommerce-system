@@ -6,37 +6,37 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "balance_history")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class BalanceHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
-    private int amount;
+    private long amount;
 
-    @Column(nullable = false)
-    private String type;  // 예: CHARGE, USE 등
+    private String type;
 
-    @Column(length = 255)
     private String description;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Builder
+    public BalanceHistory(Long userId, long amount, String type, String description) {
+        this.userId = userId;
+        this.amount = amount;
+        this.type = type;
+        this.description = description;
+    }
 
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
     }
 
-    public static BalanceHistory charge(Long userId, int amount) {
+    public static BalanceHistory charge(Long userId, long amount) {
         return BalanceHistory.builder()
                 .userId(userId)
                 .amount(amount)
@@ -45,7 +45,7 @@ public class BalanceHistory {
                 .build();
     }
 
-    public static BalanceHistory use(Long userId, int amount) {
+    public static BalanceHistory use(Long userId, long amount) {
         return BalanceHistory.builder()
                 .userId(userId)
                 .amount(amount)
@@ -54,12 +54,4 @@ public class BalanceHistory {
                 .build();
     }
 
-    public static BalanceHistory deduct(Long userId, int amount) {
-        return BalanceHistory.builder()
-                .userId(userId)
-                .amount(amount)
-                .type("DEDUCT")
-                .description("잔액 취소?")
-                .build();
-    }
 }

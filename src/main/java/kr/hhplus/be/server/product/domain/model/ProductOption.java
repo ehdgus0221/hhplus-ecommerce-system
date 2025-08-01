@@ -1,10 +1,10 @@
 package kr.hhplus.be.server.product.domain.model;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.common.ErrorMessages;
 import lombok.*;
 
 @Entity
-@Table(name = "product_option")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductOption {
@@ -13,45 +13,37 @@ public class ProductOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 양방향 연관관계
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "option_name", nullable = false)
     private String optionName;
 
-    @Column(nullable = false)
     private Integer price;
 
-    @Column(nullable = false)
-    private Integer stock;
+    private long stock;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private ProductOptionStatus status;
 
     @Version
     private Long version;
 
     @Builder
-    public ProductOption(String optionName, Integer price, Integer stock, boolean isActive) {
+    public ProductOption(String optionName, Integer price, long stock, Product product, ProductOptionStatus status) {
         this.optionName = optionName;
         this.price = price;
         this.stock = stock;
-        this.isActive = isActive;
-    }
-
-    // 연관관계 설정
-    public void setProduct(Product product) {
         this.product = product;
+        this.status = status;
     }
 
-    public void decreaseStock(int amount) {
-        if (!isActive) {
-            throw new IllegalStateException("비활성화된 옵션입니다.");
+    public void decreaseStock(long amount) {
+        if (!ProductOptionStatus.ON_SALE.equals(this.status)) {
+            throw new IllegalStateException(ErrorMessages.PRODUCT_OPTION_INACTIVE);
         }
         if (stock < amount) {
-            throw new IllegalStateException("재고가 부족합니다.");
+            throw new IllegalStateException(ErrorMessages.PRODUCT_OPTION_NOT_FOUND);
         }
         this.stock -= amount;
     }
@@ -60,22 +52,15 @@ public class ProductOption {
         return this.stock == 0;
     }
 
-    public void deactivate() {
-        this.isActive = false;
+    public boolean isStockInsufficient(long quantity) {
+        return this.stock < quantity;
     }
 
-    public void activate() {
-        this.isActive = true;
-    }
-
-    public void decreaseStock(Integer stock) {
-        if (this.stock < stock) {
-            throw new IllegalArgumentException("재고가 부족합니다.");
-        }
-        this.stock -= stock;
-    }
-
-    public void increaseStock(Integer stock) {
+    public void increaseStock(long stock) {
         this.stock += stock;
+    }
+
+    public boolean isActive() {
+        return ProductOptionStatus.ON_SALE.equals(this.status);
     }
 }

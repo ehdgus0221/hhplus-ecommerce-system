@@ -11,8 +11,8 @@ import lombok.*;
 public class ProductOptionResponseDto {
     private Long id;
     private String optionName;
-    private Integer price;
-    private Integer stock;
+    private long price;
+    private long stock;
 
     public ProductOptionResponseDto(ProductOption option) {
         this.id = option.getId();

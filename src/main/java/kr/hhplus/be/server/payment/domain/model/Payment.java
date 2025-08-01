@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.payment.domain.model;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.common.ErrorMessages;
 import kr.hhplus.be.server.common.InvalidAmountException;
 import lombok.*;
 
@@ -18,30 +19,34 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
     private Long orderId;
-    private int paidAmount;
+    private long paidAmount;
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     private LocalDateTime createdAt;
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
-    public void complete() {
-        this.status = PaymentStatus.COMPLETED;
+
+
+    @Builder
+    private Payment(Long id, Long orderId, long paidAmount, PaymentStatus status) {
+        this.id = id;
+        this.orderId = orderId;
+        this.paidAmount = paidAmount;
+        this.status = status;
     }
 
-    public void fail() {
-        this.status = PaymentStatus.FAILED;
-    }
-
-    public static Payment create(Long userId, int amount) {
-        if (amount <= 0) throw new InvalidAmountException();
+    public static Payment create(Long orderId, long amount) {
+        if (amount <= 0) throw new IllegalStateException(ErrorMessages.PAYMENT_PRICE_INVALID);
         return Payment.builder()
-                .userId(userId)
+                .orderId(orderId)
                 .paidAmount(amount)
-                .status(PaymentStatus.COMPLETED)
+                .status(PaymentStatus.PENDING)
                 .build();
+    }
+
+    public void pay() {
+        if (!status.equals(PaymentStatus.PENDING)) {
+            throw new IllegalStateException("결제 가능 상태가 아닙니다.");
+        }
+        this.status = PaymentStatus.COMPLETED;
     }
 }

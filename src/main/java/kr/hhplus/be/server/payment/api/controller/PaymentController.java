@@ -12,11 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/payments")
-public class PaymentController implements PaymentApiSpec {
+public class PaymentController{
 
     // 결제 내역 전체 조회
     @GetMapping
-    @Override
     public ResponseEntity<List<PaymentResponse.Details>> getAllPayments() {
         // 예시 데이터 반환
         List<PaymentResponse.Details> response = List.of(
@@ -29,7 +28,6 @@ public class PaymentController implements PaymentApiSpec {
 
     // 결제 상세 내역 조회
     @GetMapping("/payments/{id}")
-    @Override
     public ResponseEntity<PaymentResponse.Details> getDetails(@PathVariable Long id) {
         // 예시 데이터 반환
         PaymentResponse.Details response = new PaymentResponse.Details(
@@ -39,11 +37,4 @@ public class PaymentController implements PaymentApiSpec {
         return ResponseEntity.ok(response);
     }
 
-
-    // 결제 요청
-    @PostMapping
-    @Override
-    public ResponseEntity<Void> create(@RequestBody PaymentRequest.Create request) {
-        return ResponseEntity.ok().build();
-    }
 }

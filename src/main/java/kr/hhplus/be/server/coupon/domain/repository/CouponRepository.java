@@ -4,6 +4,6 @@ import kr.hhplus.be.server.coupon.domain.model.Coupon;
 
 
 public interface CouponRepository {
-    Coupon findByIdOrThrow(Long couponId);
+    Coupon findById(Long couponId);
     Coupon save(Coupon userCoupon);
 }

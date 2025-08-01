@@ -5,7 +5,8 @@ import kr.hhplus.be.server.order.domain.service.OrderDomainService;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service

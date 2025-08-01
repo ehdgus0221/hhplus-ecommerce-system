@@ -49,7 +49,7 @@ class CouponDomainServiceTest {
                 .expiredAt(LocalDateTime.now().plusDays(1))
                 .build();
 
-        when(couponRepository.findByIdOrThrow(couponId)).thenReturn(coupon);
+        when(couponRepository.findById(couponId)).thenReturn(coupon);
         when(userCouponRepository.existsByUserIdAndCouponId(userId, couponId)).thenReturn(false);
         when(couponRepository.save(any(Coupon.class))).thenReturn(coupon);
         when(userCouponRepository.save(any(UserCoupon.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -71,7 +71,7 @@ class CouponDomainServiceTest {
         assertThat(response.getExpiredAt()).isEqualTo(coupon.getExpiredAt());
         assertThat(coupon.getQuantity()).isEqualTo(4);  // 5 - 1 감소 확인
 
-        verify(couponRepository).findByIdOrThrow(couponId);
+        verify(couponRepository).findById(couponId);
         verify(userCouponRepository).existsByUserIdAndCouponId(userId, couponId);
         verify(couponRepository).save(coupon);
         verify(userCouponRepository).save(any(UserCoupon.class));
@@ -89,7 +89,7 @@ class CouponDomainServiceTest {
                 .quantity(5)
                 .build();
 
-        when(couponRepository.findByIdOrThrow(couponId)).thenReturn(coupon);
+        when(couponRepository.findById(couponId)).thenReturn(coupon);
 
         CouponIssueRequestDto request = new CouponIssueRequestDto();
         ReflectionTestUtils.setField(request, "userId", userId);
@@ -100,7 +100,7 @@ class CouponDomainServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("쿠폰이 만료되었습니다.");
 
-        verify(couponRepository).findByIdOrThrow(couponId);
+        verify(couponRepository).findById(couponId);
         verifyNoMoreInteractions(userCouponRepository, couponRepository);
     }
 
@@ -116,7 +116,7 @@ class CouponDomainServiceTest {
                 .quantity(0)  // 수량 없음
                 .build();
 
-        when(couponRepository.findByIdOrThrow(couponId)).thenReturn(coupon);
+        when(couponRepository.findById(couponId)).thenReturn(coupon);
 
         CouponIssueRequestDto request = new CouponIssueRequestDto();
         ReflectionTestUtils.setField(request, "userId", userId);
@@ -126,7 +126,7 @@ class CouponDomainServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("쿠폰 수량이 없습니다.");
 
-        verify(couponRepository).findByIdOrThrow(couponId);
+        verify(couponRepository).findById(couponId);
         verifyNoMoreInteractions(userCouponRepository, couponRepository);
     }
 
@@ -142,7 +142,7 @@ class CouponDomainServiceTest {
                 .quantity(5)
                 .build();
 
-        when(couponRepository.findByIdOrThrow(couponId)).thenReturn(coupon);
+        when(couponRepository.findById(couponId)).thenReturn(coupon);
         when(userCouponRepository.existsByUserIdAndCouponId(userId, couponId)).thenReturn(true);  // 이미 발급됨
 
         CouponIssueRequestDto request = new CouponIssueRequestDto();
@@ -153,7 +153,7 @@ class CouponDomainServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("이미 발급받은 쿠폰입니다.");
 
-        verify(couponRepository).findByIdOrThrow(couponId);
+        verify(couponRepository).findById(couponId);
         verify(userCouponRepository).existsByUserIdAndCouponId(userId, couponId);
         verifyNoMoreInteractions(couponRepository, userCouponRepository);
     }
