@@ -20,7 +20,13 @@ public class ProductOptionRepositoryImpl implements ProductOptionRepository {
     };
 
     @Override
-    public ProductOption findWithPessimisticLock(Long id){
-        return productOptionJpaRepository.findWithPessimisticLock(id);
+    public ProductOption findWithLockById(Long id){
+        return productOptionJpaRepository.findWithLockById(id)
+                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
     };
+
+    @Override
+    public ProductOption save(ProductOption productOption){
+        return productOptionJpaRepository.save(productOption);
+    }
 }

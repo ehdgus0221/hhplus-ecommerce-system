@@ -12,6 +12,7 @@ import kr.hhplus.be.server.product.domain.repository.ProductOptionRepository;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,13 +26,13 @@ public class OrderDomainService {
     private final PaymentRepository paymentRepository;
     private final ProductOptionRepository productOptionRepository;
 
-    public Order createOrder(Long userId, Long productId, Long optionId, long quantity, String couponId) {
+    public Order createOrder(Long userId, Long productId, Long optionId, long quantity, long couponId) {
 
         Product product = productRepository.findByIdOrThrow(productId);
 
         // 옵션 조회 및 재고 확인
         // 비관적 락 적용
-        ProductOption option = productOptionRepository.findWithPessimisticLock(optionId);
+        ProductOption option = productOptionRepository.findWithLockById(optionId);
 
         if (!option.isOutOfStock() || option.isStockInsufficient(quantity)) {
             throw new IllegalArgumentException("해당 옵션의 재고가 부족하거나 비활성 상태입니다.");
@@ -40,7 +41,7 @@ public class OrderDomainService {
 
         Order order = Order.create(
                 userId,
-                couponId != null ? Long.valueOf(couponId) : null,
+                couponId ,
                 product.getBasePrice(),
                 OrderStatus.ORDERED,
                 LocalDateTime.now()

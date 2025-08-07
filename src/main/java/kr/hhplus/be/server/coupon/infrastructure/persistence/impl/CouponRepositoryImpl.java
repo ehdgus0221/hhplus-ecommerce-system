@@ -23,4 +23,10 @@ public class CouponRepositoryImpl implements CouponRepository {
     public Coupon save(Coupon coupon) {
         return couponJpaRepository.save(coupon);
     }
+
+    @Override
+    public Coupon findWithLockById(Long couponId) {
+        return couponJpaRepository.findWithLockById(couponId)
+                .orElseThrow(() -> new IllegalArgumentException("쿠폰이 존재하지 않습니다."));
+    }
 }

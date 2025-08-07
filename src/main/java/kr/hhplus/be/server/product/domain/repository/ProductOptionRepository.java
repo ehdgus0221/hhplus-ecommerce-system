@@ -6,5 +6,6 @@ import java.util.Optional;
 
 public interface ProductOptionRepository {
     Optional<ProductOption> findById(Long id);
-    ProductOption findWithPessimisticLock(Long id);
+    ProductOption findWithLockById(Long id);
+    ProductOption save(ProductOption productOption);
 }

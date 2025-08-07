@@ -15,6 +15,5 @@ public interface ProductOptionJpaRepository extends JpaRepository<ProductOption,
 
     // 동시성 제어
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT o FROM ProductOption o WHERE o.id = :id")
-    ProductOption findWithPessimisticLock(@Param("id") Long id);
+    Optional<ProductOption> findWithLockById(Long id);
 }

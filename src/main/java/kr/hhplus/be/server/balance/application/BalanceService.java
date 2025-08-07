@@ -17,6 +17,7 @@ public class BalanceService {
     private final BalanceDomainService balanceDomainService;
     private final BalanceRepository balanceRepository;
 
+    @Transactional
     public BalanceResponseDto charge(Long userId, long amount) {
         return BalanceResponseDto.from(balanceDomainService.charge(userId, amount));
     }
@@ -26,6 +27,7 @@ public class BalanceService {
         return BalanceResponseDto.from(balanceDomainService.use(userId, amount));
     }
 
+    @Transactional(readOnly = true)
     public BalanceResponseDto get(Long userId) {
         long amount = balanceRepository.findByUserId(userId)
                 .map(Balance::getAmount)

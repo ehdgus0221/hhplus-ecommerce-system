@@ -20,11 +20,11 @@ public class OrderFacade {
 
     @Transactional
     public OrderResponseDto placeOrder(OrderRequestDto.Create request) {
-        Long productId = Long.valueOf(request.productId());
-        Long optionId = Long.valueOf(request.productOptionId());
+        Long productId = request.productId();
+        Long optionId = request.productOptionId();
         Integer stock = request.stock();
-        Long userId = request.userId() != null ? Long.valueOf(request.userId()) : 0L;
-        String couponId = request.couponId();
+        Long userId = request.userId();
+        Long couponId = request.couponId();
 
         // 1. 주문 생성 및 재고 차감
         Order order = orderService.createOrder(userId, productId, optionId, stock, couponId);

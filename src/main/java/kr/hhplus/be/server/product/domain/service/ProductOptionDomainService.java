@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductOptionDomainService {
     private final ProductOptionRepository productOptionRepository;
 
-    @Transactional
     public void decreaseStock(Long productOptionId, int stock) {
         ProductOption option = productOptionRepository.findById(productOptionId)
                 .orElseThrow(() -> new EntityNotFoundException("상품 옵션이 존재하지 않습니다."));

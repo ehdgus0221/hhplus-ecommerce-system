@@ -7,6 +7,7 @@ import kr.hhplus.be.server.product.domain.model.Product;
 import kr.hhplus.be.server.product.domain.service.ProductDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,12 +19,14 @@ public class ProductService {
     private final ProductDomainService productDomainService;
     private final ProductDtoMapper productMapper;
 
+    @Transactional(readOnly = true)
     public List<ProductResponseDto> getAllProducts() {
         return productDomainService.getAllActiveProducts().stream()
                 .map(ProductResponseDto::new)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public ProductDetailResponseDto getProductDetail(Long productId) {
         Product product = productDomainService.getProductWithOptions(productId);
         return productMapper.toDetailResponse(product);

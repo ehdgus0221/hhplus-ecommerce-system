@@ -9,6 +9,7 @@ import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.coupon.domain.repository.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class CouponDomainService {
     private final UserCouponRepository userCouponRepository;
 
     public UserCouponResponseDto issueCoupon(CouponIssueRequestDto request) {
-        Coupon coupon = couponRepository.findById(request.getCouponId());
+        Coupon coupon = couponRepository.findWithLockById(request.getCouponId());
         if (userCouponRepository.existsByUserIdAndCouponId(request.getUserId(), request.getCouponId())) {
             throw new IllegalStateException("이미 발급받은 쿠폰입니다.");
         }
