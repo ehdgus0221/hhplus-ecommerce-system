@@ -11,22 +11,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class BalanceService {
+
+    private static final long INITIAL_AMOUNT = 0L;
+
     private final BalanceDomainService balanceDomainService;
     private final BalanceRepository balanceRepository;
 
-    public BalanceResponseDto charge(Long userId, int amount) {
+    public BalanceResponseDto charge(Long userId, long amount) {
         return BalanceResponseDto.from(balanceDomainService.charge(userId, amount));
     }
 
     @Transactional
-    public BalanceResponseDto use(Long userId, int amount) {
+    public BalanceResponseDto use(Long userId, long amount) {
         return BalanceResponseDto.from(balanceDomainService.use(userId, amount));
     }
 
     public BalanceResponseDto get(Long userId) {
-        int amount = balanceRepository.findByUserId(userId)
+        long amount = balanceRepository.findByUserId(userId)
                 .map(Balance::getAmount)
-                .orElse(0);
+                .orElse(INITIAL_AMOUNT);
         return BalanceResponseDto.of(amount);
     }
 }

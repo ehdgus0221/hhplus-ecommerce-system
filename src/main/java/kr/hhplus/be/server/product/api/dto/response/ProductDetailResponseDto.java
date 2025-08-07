@@ -20,8 +20,8 @@ public class ProductDetailResponseDto {
     public static class ProductOptionResponse {
         private Long id;
         private String optionName;
-        private int price;
-        private int stock;
+        private long price;
+        private long stock;
         private boolean isActive;
         private boolean isSoldOut;  // 재고 없으면 true
     }

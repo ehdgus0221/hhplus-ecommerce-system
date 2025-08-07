@@ -6,36 +6,47 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
-@Table(name = "order_item")
 public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_item_id")
     private Long id;
 
-    // 주문 (외래키)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
     private Order order;
 
-    // 상품 옵션 아이디 (외래키)
     private Long productOptionId;
 
-    private Integer stock;
+    private String productOptionName;
 
-    private Integer unitPrice;
+    private long stock;
 
-    public static OrderItem create(Long productOptionId, Integer stock, Integer unitPrice) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.productOptionId = productOptionId;
-        orderItem.stock = stock;
-        orderItem.unitPrice = unitPrice;
-        return orderItem;
+    private long unitPrice;
+
+    @Builder
+    private OrderItem(Long id, Order order, Long productOptionId, String productOptionName, long stock, long unitPrice) {
+        this.id = id;
+        this.order = order;
+        this.productOptionId = productOptionId;
+        this.productOptionName = productOptionName;
+        this.stock = stock;
+        this.unitPrice = unitPrice;
+    }
+
+    public static OrderItem create(Long productOptionId, String productOptionName, long stock, long unitPrice) {
+        return OrderItem.builder()
+                .productOptionId(productOptionId)
+                .productOptionName(productOptionName)
+                .stock(stock)
+                .unitPrice(unitPrice)
+                .build();
     }
 
     public void setOrder(Order order) {
         this.order = order;
     }
+
+
 }

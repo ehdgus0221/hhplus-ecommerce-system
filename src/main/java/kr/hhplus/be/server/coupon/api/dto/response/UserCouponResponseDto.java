@@ -34,7 +34,6 @@ public class UserCouponResponseDto {
                 .couponId(coupon.getId())
                 .couponName(coupon.getName())
                 .discountRate(coupon.getDiscountRate())
-                .used(userCoupon.isUsed())
                 .issuedAt(userCoupon.getIssuedAt())
                 .expiredAt(coupon.getExpiredAt())
                 .build();

@@ -3,54 +3,59 @@ package kr.hhplus.be.server.balance.domain.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import kr.hhplus.be.server.common.exception.ErrorMessages;
+import kr.hhplus.be.server.common.ErrorMessages;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "balance")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
+@Table(name = "balance", indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id")
+})
 public class Balance {
+
+    private static final long INITIAL_AMOUNT = 0L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "balance_id")
     private Long id;
 
-    @NotNull(message = "User ID는 필수입니다.")
-    @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
 
-    @Min(value = 0, message = "잔액은 음수가 될 수 없습니다.")
-    @Column(nullable = false)
-    private int amount;
+    // null 허용 x
+    private long amount;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
+    @Builder
+    private Balance(Long id, Long userId, long amount) {
+        this.id = id;
+        this.userId = userId;
+        this.amount = amount;
+    }
 
     public static Balance createInitial(Long userId) {
         return Balance.builder()
                 .userId(userId)
-                .amount(0)
+                .amount(INITIAL_AMOUNT)
                 .build();
     }
 
-    public void addAmount(int chargeAmount) {
+    public void addAmount(long chargeAmount) {
         if (chargeAmount <= 0) {
             throw new IllegalArgumentException(ErrorMessages.INVALID_CHARGE_AMOUNT);
         }
         this.amount += chargeAmount;
     }
 
-    public void deductAmount(int useAmount) {
+    public void deductAmount(long useAmount) {
         if (useAmount <= 0) {
-            throw new IllegalArgumentException("사용 금액은 0보다 커야 합니다.");
+            throw new IllegalArgumentException(ErrorMessages.INVALID_USAGE_AMOUNT);
         }
         if (this.amount < useAmount) {
-            throw new IllegalArgumentException("잔액이 부족합니다.");
+            throw new IllegalArgumentException(ErrorMessages.INSUFFICIENT_BALANCE);
         }
         this.amount -= useAmount;
     }

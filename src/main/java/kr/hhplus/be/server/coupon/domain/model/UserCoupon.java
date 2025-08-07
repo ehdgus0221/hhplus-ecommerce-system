@@ -3,14 +3,13 @@ package kr.hhplus.be.server.coupon.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_coupon")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class UserCoupon {
 
     @Id
@@ -23,17 +22,43 @@ public class UserCoupon {
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
-    private boolean used;
+    @Enumerated(EnumType.STRING)
+    private UserCouponStatus usedStatus;
 
     private LocalDateTime issuedAt;
 
-    public static UserCoupon issue(Long userId, Coupon coupon) {
-        UserCoupon userCoupon = new UserCoupon();
-        userCoupon.userId = userId;
-        userCoupon.coupon = coupon;
-        userCoupon.used = false;
-        userCoupon.issuedAt = LocalDateTime.now();
+    private LocalDateTime usedAt;
 
-        return userCoupon;
+    @Builder
+    private UserCoupon(Long id, Long userId, Coupon coupon, UserCouponStatus usedStatus,
+                       LocalDateTime issuedAt, LocalDateTime usedAt) {
+        this.id = id;
+        this.userId = userId;
+        this.coupon = coupon;
+        this.usedStatus = usedStatus;
+        this.issuedAt = issuedAt;
+        this.usedAt = usedAt;
+    }
+
+    public static UserCoupon issue(Long userId, Coupon coupon) {
+        return issue(userId, coupon, LocalDateTime.now());
+    }
+
+    public static UserCoupon issue(Long userId, Coupon coupon, LocalDateTime issuedAt) {
+        return UserCoupon.builder()
+                .userId(userId)
+                .coupon(coupon)
+                .usedStatus(UserCouponStatus.UNUSED) // 기본 상태는 미사용
+                .issuedAt(issuedAt)
+                .build();
+    }
+
+    public void use() {
+        // 발급가능 상태일 때만 사용 가능
+        if (!coupon.getStatus().equals(CouponStatus.START)) {
+            throw new IllegalStateException("사용할 수 없는 쿠폰입니다.");
+        }
+        this.usedStatus = UserCouponStatus.USED;
+        this.usedAt = LocalDateTime.now();
     }
 }
