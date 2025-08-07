@@ -25,8 +25,10 @@ public class Balance {
 
     private Long userId;
 
-    // null 허용 x
     private long amount;
+
+    @Version
+    private Long version;
 
 
     @Builder
