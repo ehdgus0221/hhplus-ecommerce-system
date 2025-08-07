@@ -26,9 +26,6 @@ public class ProductOption {
     @Enumerated(EnumType.STRING)
     private ProductOptionStatus status;
 
-    @Version
-    private Long version;
-
     @Builder
     public ProductOption(String optionName, Integer price, long stock, Product product, ProductOptionStatus status) {
         this.optionName = optionName;
@@ -36,6 +33,16 @@ public class ProductOption {
         this.stock = stock;
         this.product = product;
         this.status = status;
+    }
+
+    public static ProductOption create(Product product, String optionName, int price, long stock) {
+        return ProductOption.builder()
+                .product(product)
+                .optionName(optionName)
+                .price(price)
+                .stock(stock)
+                .status(ProductOptionStatus.ON_SALE)
+                .build();
     }
 
     public void decreaseStock(long amount) {

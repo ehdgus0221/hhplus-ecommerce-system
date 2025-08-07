@@ -19,12 +19,10 @@ public class ProductDomainService {
     private final ProductRepository productRepository;
     private final ProductOptionRepository productOptionRepository;
 
-    @Transactional(readOnly = true)
     public List<Product> getAllActiveProducts() {
         return productRepository.findByStatus(ProductStatus.ON_SALE);
     }
 
-    @Transactional(readOnly = true)
     public Product getProductWithOptions(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
@@ -35,7 +33,6 @@ public class ProductDomainService {
         return product;
     }
 
-    @Transactional
     public void decreaseOptionStock(Long productOptionId, int stock) {
         ProductOption option = productOptionRepository.findById(productOptionId)
                 .orElseThrow(() -> new EntityNotFoundException("상품 옵션이 존재하지 않습니다."));
