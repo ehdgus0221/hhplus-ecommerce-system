@@ -11,11 +11,11 @@ import java.util.List;
 
 public class OrderRequestDto {
     public record Create(
-            String productId,
-            String productOptionId,
+            Long productId,
+            Long productOptionId,
             Integer stock,
-            String userId,
-            String couponId
+            Long userId,
+            Long couponId
     ) {
     }
 }

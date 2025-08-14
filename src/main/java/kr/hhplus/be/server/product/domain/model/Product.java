@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.product.domain.model;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.balance.domain.model.Balance;
 import kr.hhplus.be.server.common.ErrorMessages;
 import lombok.*;
 
@@ -35,6 +36,15 @@ public class Product {
         this.basePrice = basePrice;
         this.description = description;
         this.status = status;
+    }
+
+    public static Product create(String name, int basePrice, String description) {
+        return Product.builder()
+                .name(name)
+                .basePrice(basePrice)
+                .description(description)
+                .status(ProductStatus.ON_SALE)
+                .build();
     }
 
 }
