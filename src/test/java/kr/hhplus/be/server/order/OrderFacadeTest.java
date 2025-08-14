@@ -41,10 +41,10 @@ class OrderFacadeTest {
     @DisplayName("주문 처리 실패 - 잔액 부족으로 인한 예외 발생")
     void placeOrder_fail_dueToInsufficientBalance() {
         // given
-        OrderRequestDto.Create request = new OrderRequestDto.Create("2", "3", 2, "1", null);
+        OrderRequestDto.Create request = new OrderRequestDto.Create(2L, 3L, 2, 1L, 1L);
 
         var order = mock(kr.hhplus.be.server.order.domain.model.Order.class);
-        when(order.getTotalPrice()).thenReturn(3000);
+        when(order.getTotalPrice()).thenReturn(3000L);
         when(orderService.createOrder(anyLong(), anyLong(), anyLong(), anyInt(), any()))
                 .thenReturn(order);
 
@@ -65,7 +65,7 @@ class OrderFacadeTest {
     @DisplayName("주문 처리 실패 - 상품이 존재하지 않아 예외 발생")
     void placeOrder_failDueToOrderCreation() {
         // given
-        OrderRequestDto.Create request = new OrderRequestDto.Create("2", "3", 2, "1", null);
+        OrderRequestDto.Create request = new OrderRequestDto.Create(2L, 3L, 2, 1L, 1L);
 
         when(orderService.createOrder(anyLong(), anyLong(), anyLong(), anyInt(), any()))
                 .thenThrow(new IllegalArgumentException("상품이 존재하지 않습니다."));
@@ -85,10 +85,10 @@ class OrderFacadeTest {
     @DisplayName("주문 처리 성공 - 정상 흐름")
     void placeOrder_success() {
         // given
-        OrderRequestDto.Create request = new OrderRequestDto.Create("2", "3", 2, "1", null);
+        OrderRequestDto.Create request = new OrderRequestDto.Create(2L, 3L, 2, 1L, 1L);
 
         var order = mock(kr.hhplus.be.server.order.domain.model.Order.class);
-        when(order.getTotalPrice()).thenReturn(3000);
+        when(order.getTotalPrice()).thenReturn(3000L);
         when(order.getStatus()).thenReturn(OrderStatus.ORDERED); // 상태 세팅
         when(orderService.createOrder(anyLong(), anyLong(), anyLong(), anyInt(), any()))
                 .thenReturn(order);
@@ -114,10 +114,10 @@ class OrderFacadeTest {
     @DisplayName("결제 실패 시 재고 복구 호출 및 예외 전파")
     void placeOrder_paymentFail_shouldRestoreStock() {
         // given
-        OrderRequestDto.Create request = new OrderRequestDto.Create("2", "3", 2, "1", null);
+        OrderRequestDto.Create request = new OrderRequestDto.Create(2L, 3L, 2, 1L, 1L);
 
         Order order = mock(Order.class);
-        when(order.getTotalPrice()).thenReturn(3000);
+        when(order.getTotalPrice()).thenReturn(3000L);
 
         when(orderService.createOrder(anyLong(), anyLong(), anyLong(), anyInt(), any()))
                 .thenReturn(order);
