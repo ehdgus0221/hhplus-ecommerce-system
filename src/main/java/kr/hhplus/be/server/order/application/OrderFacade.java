@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.order.application;
 
+import kr.hhplus.be.server.aop.DistributedLock;
 import kr.hhplus.be.server.balance.application.BalanceService;
 import kr.hhplus.be.server.order.api.dto.request.OrderRequestDto;
 import kr.hhplus.be.server.order.api.dto.response.OrderResponseDto;
@@ -8,6 +9,7 @@ import kr.hhplus.be.server.payment.application.PaymentService;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -18,7 +20,8 @@ public class OrderFacade {
     private final PaymentService paymentService;
     private final BalanceService balanceService;
 
-    @Transactional
+    @DistributedLock(key = "#request.userId + '-' + #request.productId")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OrderResponseDto placeOrder(OrderRequestDto.Create request) {
         Long productId = request.productId();
         Long optionId = request.productOptionId();

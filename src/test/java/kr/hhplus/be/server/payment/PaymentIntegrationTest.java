@@ -38,7 +38,10 @@ public class PaymentIntegrationTest {
         long initialBalance = 10000L;
         long paymentAmount = 5000L;
 
-        balanceRepository.save(new Balance(userId, initialBalance));
+        Balance balance = Balance.createInitial(userId);
+        balance.addAmount(initialBalance);
+
+        balanceRepository.save(balance);
 
         // when
         Payment payment = paymentService.processPayment(userId, paymentAmount);
@@ -60,7 +63,10 @@ public class PaymentIntegrationTest {
         long initialBalance = 10000L;
         long invalidAmount = 0L;
 
-        balanceRepository.save(new Balance(userId, initialBalance));
+        Balance balance = Balance.createInitial(userId);
+        balance.addAmount(initialBalance);
+
+        balanceRepository.save(balance);
 
         // when & then
         assertThatThrownBy(() -> paymentService.processPayment(userId, invalidAmount))
@@ -76,7 +82,10 @@ public class PaymentIntegrationTest {
         long initialBalance = 3000L;
         long paymentAmount = 5000L;
 
-        balanceRepository.save(new Balance(userId, initialBalance));
+        Balance balance = Balance.createInitial(userId);
+        balance.addAmount(initialBalance);
+
+        balanceRepository.save(balance);
 
         // when & then
         assertThatThrownBy(() -> paymentService.processPayment(userId, paymentAmount))
