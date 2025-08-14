@@ -32,9 +32,10 @@ public class OrderDomainService {
 
         // 옵션 조회 및 재고 확인
         // 비관적 락 적용
-        ProductOption option = productOptionRepository.findWithLockById(optionId);
+        ProductOption option = productOptionRepository.findWithLockById(optionId)
+                .orElseThrow(() -> new IllegalArgumentException("옵션을 찾을 수 없습니다."));
 
-        if (!option.isOutOfStock() || option.isStockInsufficient(quantity)) {
+        if (option.isOutOfStock() || option.isStockInsufficient(quantity)) {
             throw new IllegalArgumentException("해당 옵션의 재고가 부족하거나 비활성 상태입니다.");
         }
         option.decreaseStock(quantity);

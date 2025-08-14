@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -37,6 +38,9 @@ public class OrderServiceConcurrencyTest {
 
     @Autowired
     private ProductOptionRepository productOptionRepository;
+
+    @Autowired
+    private ApplicationContext context;
 
 
     private void executeConcurrency(int threadCount, Runnable runnable) {
@@ -97,19 +101,20 @@ public class OrderServiceConcurrencyTest {
                 null
         );
 
-        // when
         executeConcurrency(List.of(
                 () -> {
+                    OrderFacade facadeBean = context.getBean(OrderFacade.class);
                     try {
-                        orderFacade.placeOrder(request1);
+                        facadeBean.placeOrder(request1);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         failCount.incrementAndGet();
                     }
                 },
                 () -> {
+                    OrderFacade facadeBean = context.getBean(OrderFacade.class);
                     try {
-                        orderFacade.placeOrder(request2);
+                        facadeBean.placeOrder(request2);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         failCount.incrementAndGet();
