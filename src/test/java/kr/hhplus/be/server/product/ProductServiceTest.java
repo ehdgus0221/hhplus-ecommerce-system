@@ -37,7 +37,8 @@ class ProductServiceTest {
     void getAllProducts_success() {
         // given
         List<Product> products = List.of(
-                new Product(), new Product()
+                Product.create("상품A", 1000, "설명A"),
+                Product.create("상품B", 2000, "설명B")
         );
         List<ProductResponseDto> dtoList = List.of(
                 mock(ProductResponseDto.class), mock(ProductResponseDto.class)

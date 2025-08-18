@@ -34,6 +34,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
 	// restdocs
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
@@ -42,6 +43,9 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")
+
+	// Redisson
+	implementation("org.redisson:redisson-spring-boot-starter:3.36.0")
 
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")

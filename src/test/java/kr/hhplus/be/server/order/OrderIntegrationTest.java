@@ -80,7 +80,8 @@ public class OrderIntegrationTest {
     @DisplayName("주문 정상 성공 케이스")
     void order_success_case() throws Exception {
         // 1. 상품 및 옵션 등록
-        Product product = new Product("신발", 10_000, "a", ProductStatus.ON_SALE);
+        Product product = Product.create("신발", 10_000,"신발입니다.");
+                //new Product("신발", 10_000, "a", ProductStatus.ON_SALE);
         productRepository.save(product);
 
         ProductOption option = new ProductOption("검정색", 10_000, 100, product, ProductOptionStatus.ON_SALE);
@@ -96,16 +97,16 @@ public class OrderIntegrationTest {
         Coupon coupon = Coupon.create("10% 할인", 10, 10, 100, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now());
         couponRepository.save(coupon); // 쿠폰 저장 추가
 
-        UserCoupon userCoupon = new UserCoupon(userId, coupon, UserCouponStatus.UNUSED, LocalDateTime.now(), LocalDateTime.now());
+        UserCoupon userCoupon = new UserCoupon(coupon.getId(), userId, coupon, UserCouponStatus.UNUSED, LocalDateTime.now(), LocalDateTime.now());
         userCouponRepository.save(userCoupon);
-        String userCouponId = userCoupon.getId().toString();
+        Long userCouponId = userCoupon.getId();
 
         // 4. 주문 요청 생성
         OrderRequestDto.Create request = new OrderRequestDto.Create(
-                product.getId().toString(),
-                option.getId().toString(),
+                product.getId(),
+                option.getId(),
                 2,
-                userId.toString(),
+                userId,
                 userCouponId
         );
 

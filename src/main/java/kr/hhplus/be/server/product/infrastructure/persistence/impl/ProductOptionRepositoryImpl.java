@@ -20,9 +20,8 @@ public class ProductOptionRepositoryImpl implements ProductOptionRepository {
     };
 
     @Override
-    public ProductOption findWithLockById(Long id){
-        return productOptionJpaRepository.findWithLockById(id)
-                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+    public Optional<ProductOption> findWithLockById(Long id){
+        return productOptionJpaRepository.findWithLockById(id);
     };
 
     @Override

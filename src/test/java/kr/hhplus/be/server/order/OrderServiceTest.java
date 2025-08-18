@@ -28,10 +28,10 @@ class OrderServiceTest {
     @Test
     @DisplayName("주문 생성 실패 - OrderDomainService에서 예외 발생 시 예외가 전파된다")
     void createOrder_fail() {
-        when(orderDomainService.createOrder(1L, 2L, 3L, 1, null))
+        when(orderDomainService.createOrder(1L, 2L, 3L, 1, 1L))
                 .thenThrow(new IllegalArgumentException("상품 옵션 재고 부족"));
 
-        assertThatThrownBy(() -> orderService.createOrder(1L, 2L, 3L, 1, null))
+        assertThatThrownBy(() -> orderService.createOrder(1L, 2L, 3L, 1, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("상품 옵션 재고 부족");
     }
@@ -54,9 +54,9 @@ class OrderServiceTest {
     @DisplayName("주문 생성 성공 - OrderDomainService의 결과를 그대로 반환한다")
     void createOrder_success() {
         Order mockOrder = mock(Order.class);
-        when(orderDomainService.createOrder(1L, 2L, 3L, 1, null)).thenReturn(mockOrder);
+        when(orderDomainService.createOrder(1L, 2L, 3L, 1, 1L)).thenReturn(mockOrder);
 
-        Order order = orderService.createOrder(1L, 2L, 3L, 1, null);
+        Order order = orderService.createOrder(1L, 2L, 3L, 1, 1L);
 
         assertThat(order).isEqualTo(mockOrder);
     }

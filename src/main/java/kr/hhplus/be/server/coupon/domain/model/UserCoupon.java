@@ -30,7 +30,7 @@ public class UserCoupon {
     private LocalDateTime usedAt;
 
     @Builder
-    private UserCoupon(Long id, Long userId, Coupon coupon, UserCouponStatus usedStatus,
+    public UserCoupon(Long id, Long userId, Coupon coupon, UserCouponStatus usedStatus,
                        LocalDateTime issuedAt, LocalDateTime usedAt) {
         this.id = id;
         this.userId = userId;
