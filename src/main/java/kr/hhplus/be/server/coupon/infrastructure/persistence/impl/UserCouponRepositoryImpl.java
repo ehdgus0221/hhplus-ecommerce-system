@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.webjars.NotFoundException;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Repository
 public class UserCouponRepositoryImpl implements UserCouponRepository {
@@ -27,5 +29,15 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
     @Override
     public UserCoupon save(UserCoupon userCoupon) {
         return userCouponJpaRepository.save(userCoupon);
+    }
+
+    @Override
+    public int countByCouponId(Long couponId) {
+        return userCouponJpaRepository.countByCouponId(couponId);
+    }
+
+    @Override
+    public List<UserCoupon> saveAll(Iterable<UserCoupon> userCoupons) {
+        return userCouponJpaRepository.saveAll(userCoupons);
     }
 }

@@ -15,4 +15,8 @@ public class ProductOptionService {
     public void decreaseStock(Long productOptionId, int stock) {
         productOptionDomainService.decreaseStock(productOptionId, stock);
     }
+
+    public void recordSale(Long productId, Integer stock) {
+        productOptionDomainService.recordSale(productId, stock);
+    }
 }

@@ -1,11 +1,14 @@
 package kr.hhplus.be.server.coupon.infrastructure.persistence.impl;
 
 import kr.hhplus.be.server.coupon.domain.model.Coupon;
+import kr.hhplus.be.server.coupon.domain.model.CouponStatus;
 import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.coupon.infrastructure.persistence.jpa.CouponJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.webjars.NotFoundException;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
@@ -29,4 +32,10 @@ public class CouponRepositoryImpl implements CouponRepository {
         return couponJpaRepository.findWithLockById(couponId)
                 .orElseThrow(() -> new IllegalArgumentException("쿠폰이 존재하지 않습니다."));
     }
+
+    @Override
+    public List<Coupon> findByStatus(CouponStatus status) {
+        return couponJpaRepository.findByStatus(status);
+    }
+
 }

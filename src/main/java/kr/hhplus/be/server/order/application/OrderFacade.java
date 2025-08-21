@@ -7,6 +7,7 @@ import kr.hhplus.be.server.order.api.dto.response.OrderResponseDto;
 import kr.hhplus.be.server.order.domain.model.Order;
 import kr.hhplus.be.server.payment.application.PaymentService;
 import kr.hhplus.be.server.payment.domain.model.Payment;
+import kr.hhplus.be.server.product.application.ProductOptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,6 +20,7 @@ public class OrderFacade {
     private final OrderService orderService;
     private final PaymentService paymentService;
     private final BalanceService balanceService;
+    private final ProductOptionService productOptionService;
 
     @DistributedLock(key = "#request.userId + '-' + #request.productId")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -42,7 +44,10 @@ public class OrderFacade {
             // 4. 결제와 주문 연결
             orderService.linkPaymentWithOrder(payment, order);
 
-            // 5. 응답 반환
+            // 5. 판매정보 redis에 저장
+            productOptionService.recordSale(productId, stock);
+
+            // 6. 응답 반환
             return OrderResponseDto.fromOrder(order, productId, optionId, stock);
         } catch (Exception e) {
             orderService.restoreStock(order);

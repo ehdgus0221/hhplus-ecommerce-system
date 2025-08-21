@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserCouponJpaRepository extends JpaRepository<UserCoupon,Long> {
     boolean existsByUserIdAndCouponId(Long userId, Long couponId);
+    int countByCouponId(Long couponId);
 }

@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.product.api.dto.controller;
 
 import kr.hhplus.be.server.product.api.dto.response.ProductDetailResponseDto;
+import kr.hhplus.be.server.product.api.dto.response.ProductPopularResponseDto;
 import kr.hhplus.be.server.product.api.dto.response.ProductResponseDto;
 import kr.hhplus.be.server.product.application.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,12 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetailResponseDto> getProductDetail(@PathVariable Long productId) {
         ProductDetailResponseDto response = productService.getProductDetail(productId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ProductPopularResponseDto>> getPopularProducts() {
+        List<ProductPopularResponseDto> response = productService.getPopularProducts();
         return ResponseEntity.ok(response);
     }
 }
