@@ -2,6 +2,7 @@ package kr.hhplus.be.server.product.application;
 
 import kr.hhplus.be.server.product.api.dto.ProductDtoMapper;
 import kr.hhplus.be.server.product.api.dto.response.ProductDetailResponseDto;
+import kr.hhplus.be.server.product.api.dto.response.ProductPopularResponseDto;
 import kr.hhplus.be.server.product.api.dto.response.ProductResponseDto;
 import kr.hhplus.be.server.product.domain.model.Product;
 import kr.hhplus.be.server.product.domain.service.ProductDomainService;
@@ -34,5 +35,12 @@ public class ProductService {
     public ProductDetailResponseDto getProductDetail(Long productId) {
         Product product = productDomainService.getProductWithOptions(productId);
         return productMapper.toDetailResponse(product);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductPopularResponseDto> getPopularProducts() {
+        return productDomainService.getPopularProducts().stream()
+                .map(ProductPopularResponseDto::from)
+                .toList();
     }
 }

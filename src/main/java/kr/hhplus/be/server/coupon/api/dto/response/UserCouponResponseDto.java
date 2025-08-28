@@ -38,4 +38,13 @@ public class UserCouponResponseDto {
                 .expiredAt(coupon.getExpiredAt())
                 .build();
     }
+
+    // 쿠폰 발급 대기중 dto
+    public static UserCouponResponseDto pending(Long userId, Long couponId) {
+        return UserCouponResponseDto.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .used(false)        // 아직 사용 전이므로 false
+                .build();
+    }
 }
