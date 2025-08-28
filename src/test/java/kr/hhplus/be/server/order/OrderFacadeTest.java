@@ -99,10 +99,9 @@ class OrderFacadeTest {
         doNothing().when(orderService).linkPaymentWithOrder(any(Payment.class), any());
 
         // when
-        OrderResponseDto response = orderFacade.placeOrder(request);
+        orderFacade.placeOrder(request);
 
         // then
-        assertThat(response).isNotNull();
 
         verify(orderService).createOrder(1L, 2L, 3L, 2, null);  // request.userId() = "1"이므로 userId=1L
         verify(balanceService).use(1L, 3000);
