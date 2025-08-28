@@ -31,4 +31,9 @@ public class OrderService {
         orderDomainService.restoreStock(order);
     }
 
+    @Transactional
+    public void publish(Order order, Long productId, Long optionId, long stock) {
+        orderDomainService.publish(order, productId, optionId, stock);
+    }
+
 }
