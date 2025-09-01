@@ -24,7 +24,7 @@ public class OrderFacade {
 
     @DistributedLock(key = "#request.userId + '-' + #request.productId")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public OrderResponseDto placeOrder(OrderRequestDto.Create request) {
+    public void placeOrder(OrderRequestDto.Create request) {
         Long productId = request.productId();
         Long optionId = request.productOptionId();
         Integer stock = request.stock();
@@ -48,7 +48,8 @@ public class OrderFacade {
             productOptionService.recordSale(productId, stock);
 
             // 6. 응답 반환
-            return OrderResponseDto.fromOrder(order, productId, optionId, stock);
+            orderService.publish(order, productId, optionId, stock);
+
         } catch (Exception e) {
             orderService.restoreStock(order);
             throw e;

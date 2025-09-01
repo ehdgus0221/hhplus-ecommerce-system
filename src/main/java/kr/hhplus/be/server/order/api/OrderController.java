@@ -20,8 +20,8 @@ public class OrderController {
 
     // 주문 요청
     @PostMapping
-    public ResponseEntity<OrderResponseDto> placeOrder(@Valid @RequestBody OrderRequestDto.Create request) {
-        OrderResponseDto response = orderFacade.placeOrder(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> placeOrder(@Valid @RequestBody OrderRequestDto.Create request) {
+        orderFacade.placeOrder(request);
+        return ResponseEntity.ok().build();
     }
 }

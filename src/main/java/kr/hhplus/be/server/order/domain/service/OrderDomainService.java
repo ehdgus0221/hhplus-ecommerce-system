@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.order.domain.service;
 
+import kr.hhplus.be.server.order.application.OrderEventPublisher;
 import kr.hhplus.be.server.order.domain.model.Order;
+import kr.hhplus.be.server.order.domain.model.OrderEvent;
 import kr.hhplus.be.server.order.domain.model.OrderItem;
 import kr.hhplus.be.server.order.domain.model.OrderStatus;
 import kr.hhplus.be.server.order.domain.repository.OrderRepository;
@@ -25,6 +27,7 @@ public class OrderDomainService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final ProductOptionRepository productOptionRepository;
+    private final OrderEventPublisher orderEventPublisher;
 
     public Order createOrder(Long userId, Long productId, Long optionId, long quantity, long couponId) {
 
@@ -83,4 +86,10 @@ public class OrderDomainService {
         return productOptionRepository.findById(optionId)
                 .orElseThrow(() -> new IllegalArgumentException("옵션을 찾을 수 없습니다."));
     }
+
+    public void publish(Order order, Long productId, Long optionId, long stock) {
+        orderEventPublisher.publish(OrderEvent.Publish.of(order, productId, optionId, stock));
+    }
+
+
 }
