@@ -38,6 +38,18 @@ Kafka는 **분산 메시지 큐**로, 데이터를 **토픽(Topic)** 단위로 �
 
 * Producer → Kafka Broker (Topic, Partition) → Consumer (Consumer Group)
 
+```mermaid
+
+graph LR
+    Producer --> Broker
+    Broker --> Consumer1
+    Broker --> Consumer2
+    subgraph Kafka Broker
+        Broker
+    end
+    
+ ```
+
 Kafka는 위 구조로 높은 처리량과 낮은 지연시간을 통해 대량의 메시지를 빠르게 처리합니다.
 
 ### 카프카 클러스터(Kafka cluster)
@@ -88,6 +100,15 @@ Kafka 설정은 Spring Boot와 Spring Kafka를 활용하여 진행합니다.
 * 각 토픽은 비즈니스 특성에 맞춰 파티션 개수와 복제 계수를 설정합니다. (예: 알림 이벤트는 높은 TPS 대비를 위해 파티션을 넉넉히 할당)
 * Kafka Producer/Consumer 설정은 Spring Kafka가 제공하는 `KafkaTemplate`, `@KafkaListener` 등을 활용합니다.
 
+```mermaid
+
+graph TD
+Broker1[Broker1] --> Broker2[Broker2]
+Broker1 --> Broker3[Broker3]
+Broker2 --> Broker3
+
+```
+
 즉, 이 레이어에서는 Kafka의 구조적 설계와 Spring Boot 설정을 통해 메시징 인프라를 안정적으로 구성하는 것이 핵심입니다.
 
 ---
@@ -95,6 +116,37 @@ Kafka 설정은 Spring Boot와 Spring Kafka를 활용하여 진행합니다.
 ## 4. 전체 이벤트 발행 구조
 
 이 시스템은 **Outbox 패턴**을 적용하여 이벤트를 안전하게 발행합니다.
+
+```mermaid
+
+sequenceDiagram
+    participant User as 사용자
+    participant API as CouponController
+    participant Domain as CouponDomainService
+    participant Redis as RedisRepository
+    participant Outbox as OutboxEventRepository
+    participant Publisher as OutboxEventPublisher
+    participant Kafka as KafkaBroker
+    participant Consumer as CouponBatchConsumer
+
+    User->>API: 쿠폰 발급 요청
+    API->>Domain: registerCandidate(request)
+    Domain->>Redis: 후보자 등록
+    alt 이미 등록됨
+        Redis-->>Domain: 예외 발생
+        Domain-->>API: 에러 응답
+    else 신규 등록
+        Redis-->>Domain: 등록 성공
+        Domain->>Outbox: OutboxEvent.pending 저장
+        Domain-->>API: pending 응답
+    end
+    Outbox->>Publisher: publishPendingEvents
+    Publisher->>Kafka: 토픽 발행(coupon-events)
+    Kafka->>Consumer: 이벤트 수신
+    Consumer->>DB: 쿠폰 발급 처리
+    Consumer->>Redis: 후보자 제거
+    
+```
 
 ### 동작 흐름
 
