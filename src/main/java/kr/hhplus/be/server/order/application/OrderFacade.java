@@ -48,7 +48,7 @@ public class OrderFacade {
             productOptionService.recordSale(productId, stock);
 
             // 6. 응답 반환
-            orderService.publish(order, productId, optionId, stock);
+            orderService.publish(order);
 
         } catch (Exception e) {
             orderService.restoreStock(order);

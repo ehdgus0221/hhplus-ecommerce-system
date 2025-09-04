@@ -15,6 +15,7 @@ import java.util.List;
 public class OrderService {
 
     private final OrderDomainService orderDomainService;
+    private final OrderEventService orderEventService;
 
     @Transactional
     public Order createOrder(Long userId, Long productId, Long optionId, Integer stock, Long couponId) {
@@ -32,8 +33,8 @@ public class OrderService {
     }
 
     @Transactional
-    public void publish(Order order, Long productId, Long optionId, long stock) {
-        orderDomainService.publish(order, productId, optionId, stock);
+    public void publish(Order order) {
+        orderEventService.publishOrderCompleted(order);
     }
 
 }
