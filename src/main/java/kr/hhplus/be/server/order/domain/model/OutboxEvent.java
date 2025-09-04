@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.order.domain.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,4 +46,14 @@ public class OutboxEvent {
     public void markAsPublished() {
         this.published = true;
     }
+
+    public static OutboxEvent pending(String eventType, Long aggregateId, String payload) {
+        return OutboxEvent.builder()
+                .eventType(eventType)
+                .aggregateId(aggregateId)
+                .payload(payload)
+                .published(false)
+                .build();
+    }
+
 }

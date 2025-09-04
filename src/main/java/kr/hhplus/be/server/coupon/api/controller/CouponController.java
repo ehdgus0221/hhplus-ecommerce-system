@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.coupon.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.coupon.api.dto.request.CouponIssueRequestDto;
 import kr.hhplus.be.server.coupon.api.dto.response.CouponUseResponseDto;
@@ -20,7 +21,7 @@ public class CouponController {
     @PostMapping("/issue")
     public ResponseEntity<UserCouponResponseDto> issueCoupon(
             @Valid @RequestBody CouponIssueRequestDto request
-    ) {
+    ) throws JsonProcessingException {
         UserCouponResponseDto response = couponService.issue(request);
         return ResponseEntity.ok(response);
     }
