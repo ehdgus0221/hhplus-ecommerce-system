@@ -60,6 +60,28 @@ services:
       - kafka
     restart: always
 
+  api:
+    build:
+      context: .
+      dockerfile: prometheus.yml
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - TZ="Asia/Seoul"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
 volumes:
   kafka-data:
 
