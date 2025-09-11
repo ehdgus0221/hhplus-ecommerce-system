@@ -35,6 +35,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.boot:spring-boot-starter-kafka")
+
 
 	// restdocs
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
@@ -62,6 +65,7 @@ dependencies {
 	testImplementation("org.testcontainers:mysql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	runtimeOnly("com.h2database:h2") // 테스트용 임베디드 DB
+	testImplementation("org.testcontainers:kafka:1.21.3")
 }
 
 tasks.withType<Test> {

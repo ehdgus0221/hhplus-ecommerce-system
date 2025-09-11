@@ -21,6 +21,47 @@ services:
     volumes:
       - ./data/redis:/data
 
+  kafka:
+    image: public.ecr.aws/bitnami/kafka:3.9.1
+    container_name: kafka
+    ports:
+      - "9094:9094"   # 외부 접속 포트
+    volumes:
+      - kafka-data:/bitnami/kafka
+    environment:
+      # KRaft 모드 (Zookeeper 없는 구성)
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@127.0.0.1:9093
+
+      # 리스너 설정
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+      # 브로커 간 통신 리스너 지정 (단일 브로커라도 명시 권장)
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # 필수 토픽(replication factor) 관련 설정 (단일 브로커 환경이라 1로 설정)
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:0.7.0
+    container_name: kafka-ui
+    ports:
+       - "8081:8080"   # 웹 UI 접속 포트
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local-kafka
+      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+    restart: always
+
+volumes:
+  kafka-data:
 
 networks:
   default:

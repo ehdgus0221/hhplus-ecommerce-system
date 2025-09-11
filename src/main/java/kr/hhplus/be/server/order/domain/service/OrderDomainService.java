@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.order.domain.service;
 
-import kr.hhplus.be.server.order.application.OrderEventPublisher;
+import kr.hhplus.be.server.order.application.OrderEventService;
+import kr.hhplus.be.server.order.infrastructure.event.OrderEventPublisher;
 import kr.hhplus.be.server.order.domain.model.Order;
 import kr.hhplus.be.server.order.domain.model.OrderEvent;
 import kr.hhplus.be.server.order.domain.model.OrderItem;
@@ -14,10 +15,8 @@ import kr.hhplus.be.server.product.domain.repository.ProductOptionRepository;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class OrderDomainService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final ProductOptionRepository productOptionRepository;
-    private final OrderEventPublisher orderEventPublisher;
+    private final OrderEventService orderEventService;
 
     public Order createOrder(Long userId, Long productId, Long optionId, long quantity, long couponId) {
 
@@ -88,7 +87,11 @@ public class OrderDomainService {
     }
 
     public void publish(Order order, Long productId, Long optionId, long stock) {
-        orderEventPublisher.publish(OrderEvent.Publish.of(order, productId, optionId, stock));
+        // 주문 완료 이벤트 생성
+        OrderEvent.Completed completedEvent = OrderEvent.Completed.of(order);
+
+        // Outbox 패턴을 통해 이벤트 저장 및 Kafka 발행 준비
+        orderEventService.publishOrderCompleted(order);
     }
 
 

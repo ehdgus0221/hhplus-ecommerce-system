@@ -1,0 +1,178 @@
+# Kafka 기반 주문 이벤트 발행 시스템 설계
+
+## 목차
+
+0. [Kafka란?](#0-kafka란)
+1. [Kafka를 사용하는 이유](#1-kafka를-사용하는-이유)
+2. [Kafka 기본 동작](#2-kafka-기본-동작)
+3. [Kafka 설정 및 구조](#3-kafka-설정-및-구조)
+4. [전체 이벤트 발행 구조](#4-전체-이벤트-발행-구조)
+5. [사용된 핵심 기술](#5-사용된-핵심-기술)
+6. [기대 효과](#6-기대-효과)
+
+---
+
+## 0. Kafka란?
+
+Kafka는 대규모 데이터를 빠르고 안정적으로 주고받는 **분산형 메시지 플랫폼**으로, 이벤트 기반 아키텍처의 핵심 기술입니다.
+
+## 1. Kafka를 사용하는 이유
+* **높은 처리량**: 초당 수십만 건 이상의 메시지를 안정적으로 처리할 수 있음.
+* **확장성**: 파티션 단위로 확장 가능하여, 서비스 트래픽 증가에도 유연하게 대응.
+* **내구성 및 안정성**: 디스크 기반 저장 및 리플리케이션을 통한 장애 복구 지원.
+* **실시간 스트리밍 처리**: 이벤트 기반 아키텍처를 구축해 실시간 데이터 파이프라인 구성 가능.
+* **소비자 독립성**: 하나의 메시지를 여러 Consumer Group에서 독립적으로 소비 가능 → 다양한 서비스에서 활용 가능.
+* **비동기 처리**: 시스템 간 결합도를 낮추고, 독립적인 확장을 가능하게 함.
+
+## 2. Kafka 기본 동작
+
+Kafka는 **분산 메시지 큐**로, 데이터를 **토픽(Topic)** 단위로 관리하고, 프로듀서(Producer)가 보낸 메시지를 브로커(Broker)가 저장하며, 컨슈머(Consumer)가 읽어 처리하는 구조입니다.
+
+* **Producer**: 메시지를 Kafka 토픽으로 발행
+* **Broker**: 메시지를 저장, 파티션 단위로 관리, Consumer에게 전달
+* **Consumer**: 토픽에서 메시지를 읽어 애플리케이션 로직 처리
+* **Offset**: 메시지 순서 및 읽음 상태 관리
+* **Consumer Group**: 다수 컨슈머가 같은 토픽을 병렬로 처리 가능
+
+**기본 흐름**:
+
+* Producer → Kafka Broker (Topic, Partition) → Consumer (Consumer Group)
+
+```mermaid
+
+graph LR
+    Producer --> Broker
+    Broker --> Consumer1
+    Broker --> Consumer2
+    subgraph Kafka Broker
+        Broker
+    end
+    
+ ```
+
+Kafka는 위 구조로 높은 처리량과 낮은 지연시간을 통해 대량의 메시지를 빠르게 처리합니다.
+
+### 카프카 클러스터(Kafka cluster)
+
+* 여러 대의 Kafka Broker로 구성되어 데이터를 분산 저장하며 고가용성과 확장성을 제공합니다.
+* 리더 Broker 장애 시 Zookeeper를 통해 새로운 리더가 선출되어 안정성을 보장합니다.
+
+### 프로듀서(Producer)
+
+* 메시지를 특정 토픽의 파티션에 전송합니다.
+
+### 브로커(Broker)
+
+* Kafka 서버 노드, 토픽과 파티션을 관리하고 데이터 전달을 담당합니다.
+
+### 컨슈머(Consumer)
+
+* 브로커에서 메시지를 가져와 애플리케이션 로직을 수행합니다.
+
+### 토픽(Topic)
+
+* Kafka에서 데이터를 구분하는 주제 단위입니다.
+
+### 파티션(Partition)
+
+* 토픽을 병렬 처리할 수 있도록 나눈 단위입니다.
+
+### 리플리케이션(Replication)
+
+* 메시지를 여러 브로커에 복제해 장애 시에도 안정성을 유지합니다.
+
+### 레코드(Record)
+
+* Kafka에서 전송되는 데이터의 최소 단위입니다.
+
+### 세그먼트(Segment)
+
+* 파티션 로그를 구성하는 물리적 파일 단위입니다.
+
+---
+
+## 3. Kafka 설정 및 구조
+
+Kafka 설정은 Spring Boot와 Spring Kafka를 활용하여 진행합니다.
+
+* `application.yml`에서 토픽별 파티션 수, 복제 계수 등을 선언합니다.
+* 토픽은 `notification-events`, `coupon-events`, `order-events` 으로 구분합니다.
+* 각 토픽은 비즈니스 특성에 맞춰 파티션 개수와 복제 계수를 설정합니다. (예: 알림 이벤트는 높은 TPS 대비를 위해 파티션을 넉넉히 할당)
+* Kafka Producer/Consumer 설정은 Spring Kafka가 제공하는 `KafkaTemplate`, `@KafkaListener` 등을 활용합니다.
+
+```mermaid
+
+graph TD
+Broker1[Broker1] --> Broker2[Broker2]
+Broker1 --> Broker3[Broker3]
+Broker2 --> Broker3
+
+```
+
+즉, 이 레이어에서는 Kafka의 구조적 설계와 Spring Boot 설정을 통해 메시징 인프라를 안정적으로 구성하는 것이 핵심입니다.
+
+---
+
+## 4. 전체 이벤트 발행 구조
+
+이 시스템은 **Outbox 패턴**을 적용하여 이벤트를 안전하게 발행합니다.
+
+```mermaid
+
+sequenceDiagram
+    participant User as 사용자
+    participant API as CouponController
+    participant Domain as CouponDomainService
+    participant Redis as RedisRepository
+    participant Outbox as OutboxEventRepository
+    participant Publisher as OutboxEventPublisher
+    participant Kafka as KafkaBroker
+    participant Consumer as CouponBatchConsumer
+
+    User->>API: 쿠폰 발급 요청
+    API->>Domain: registerCandidate(request)
+    Domain->>Redis: 후보자 등록
+    alt 이미 등록됨
+        Redis-->>Domain: 예외 발생
+        Domain-->>API: 에러 응답
+    else 신규 등록
+        Redis-->>Domain: 등록 성공
+        Domain->>Outbox: OutboxEvent.pending 저장
+        Domain-->>API: pending 응답
+    end
+    Outbox->>Publisher: publishPendingEvents
+    Publisher->>Kafka: 토픽 발행(coupon-events)
+    Kafka->>Consumer: 이벤트 수신
+    Consumer->>DB: 쿠폰 발급 처리
+    Consumer->>Redis: 후보자 제거
+    
+```
+
+### 동작 흐름
+
+1. 주문이 생성되면 트랜잭션 내에서 Outbox 테이블에 이벤트를 저장합니다.
+2. 별도의 퍼블리셔가 Outbox 테이블의 `published=false` 데이터를 조회합니다.
+3. Kafka 토픽으로 이벤트를 발행합니다.
+4. 발행 성공 시 `published=true`로 상태를 업데이트합니다.
+5. 실패 시 DLQ(Dead Letter Queue)로 이벤트를 전달하여 재처리하거나 보관합니다.
+
+---
+
+## 5. 사용된 핵심 기술
+
+* **Spring Boot**: 애플리케이션 프레임워크
+* **Spring Kafka**: Kafka 연동을 위한 라이브러리
+* **Outbox Pattern**: 트랜잭션과 이벤트 발행 간 일관성을 보장
+* **Kafka**: 이벤트 기반 메시징 플랫폼
+* **Dead Letter Queue(DLQ)**: 실패한 이벤트를 별도로 저장하여 재처리 가능
+* **CompletableFuture**: 비동기 이벤트 발행 및 콜백 처리
+
+---
+
+## 6. 기대 효과
+
+* **데이터 일관성 보장**: Outbox 패턴을 사용하여 주문 처리 트랜잭션과 이벤트 발행을 분리하면서도 데이터 정합성을 유지.
+* **장애 대응력 향상**: DLQ를 통한 실패 이벤트 보관 및 재처리 가능 → 데이터 손실 방지.
+* **확장성**: Kafka Consumer Group을 활용해 이벤트 소비를 수평 확장 가능.
+* **성능 최적화**: Kafka의 파티션 기반 분산 처리로 대량 트래픽 대응.
+* **유연성**: 토픽 기반 설계로 주문 외의 쿠폰, 결제, 알림 등 도메인 확장 용이.

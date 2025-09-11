@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.coupon.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kr.hhplus.be.server.coupon.api.dto.request.CouponIssueRequestDto;
 import kr.hhplus.be.server.coupon.api.dto.response.CouponUseResponseDto;
 import kr.hhplus.be.server.coupon.api.dto.response.UserCouponResponseDto;
@@ -19,8 +20,8 @@ public class CouponService {
      * 사용자 요청 시 Redis 후보자로 등록
      */
     @Transactional
-    public UserCouponResponseDto issue(CouponIssueRequestDto request) {
-        return couponDomainService.registerCandidate(request.getUserId(), request.getCouponId());
+    public UserCouponResponseDto issue(CouponIssueRequestDto request) throws JsonProcessingException {
+        return couponDomainService.registerCandidate(request);
     }
 
     /**
