@@ -54,6 +54,10 @@ dependencies {
 	runtimeOnly("com.mysql:mysql-connector-j")
 	implementation("com.h2database:h2")
 
+	// Actuator
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("io.micrometer:micrometer-registry-prometheus")
+
     // Test
 	testCompileOnly("org.projectlombok:lombok:1.18.28")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
